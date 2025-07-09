@@ -22,10 +22,8 @@ function ClientsScreenSuspense({ searchQuery }: Props) {
 	const query = useSuspenseInfiniteQuery(
 		trpc.clients.findMany.infiniteQueryOptions(
 			{
-				search: {
-					limit: 10,
-					searchQuery,
-				},
+				limit: 10,
+				searchQuery,
 				cursor: {
 					lastClientCode: null,
 					createdAt: null,

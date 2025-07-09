@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
+import { Camera } from "lucide-react-native";
 import { useDebounce } from "@uidotdev/usehooks";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -10,6 +12,7 @@ interface Props {
 	query: string;
 	setQuery: React.Dispatch<React.SetStateAction<string>>;
 	debounceTime?: number;
+	children?: React.ReactNode;
 }
 
 export function SearchBar({
@@ -17,27 +20,39 @@ export function SearchBar({
 	query,
 	setQuery,
 	debounceTime = 500,
+	children,
 }: Props) {
 	const [value, setValue] = useState(query);
 	const debouncedValue = useDebounce(value, debounceTime);
+
+	useEffect(() => {
+		setValue(query);
+	}, [query]);
 
 	useEffect(() => {
 		setQuery(debouncedValue);
 	}, [debouncedValue, setQuery]);
 
 	return (
-		<View className="relative">
-			<Input placeholder={placeholder} onChangeText={setValue} value={value} />
-			<Button
-				className="absolute right-1 w-1"
-				variant="ghost"
-				onPress={() => {
-					setQuery("");
-					setValue("");
-				}}
-			>
-				<X className="dark:text-white" />
-			</Button>
+		<View className="flex-row items-center gap-x-2">
+			<View className="relative flex-1">
+				<Input
+					placeholder={placeholder}
+					onChangeText={setValue}
+					value={value}
+				/>
+				<Button
+					className="absolute right-1 w-1"
+					variant="ghost"
+					onPress={() => {
+						setQuery("");
+						setValue("");
+					}}
+				>
+					<X className="dark:text-white" />
+				</Button>
+			</View>
+			{children}
 		</View>
 	);
 }

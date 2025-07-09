@@ -1,15 +1,16 @@
 import { toast } from "sonner-native";
 import { useRouter } from "expo-router";
 import { useTRPC } from "@/integrations/trpc";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { useRefreshClientData } from "./use.refresh-client-data";
 
 export function useMutateClients() {
 	const trpc = useTRPC();
-	const queryClient = useQueryClient();
 	const router = useRouter();
+	const { refreshClientPageData } = useRefreshClientData();
 
 	const create = useMutation(
-		trpc.clients.create.mutationOptions({
+		trpc.clients.createClient.mutationOptions({
 			onMutate: () => {
 				toast.loading("Creando cliente", {
 					position: "top-center",
@@ -21,8 +22,7 @@ export function useMutateClients() {
 				toast.success("Cliente creado exitosamente", {
 					position: "top-center",
 				});
-				queryClient.invalidateQueries(trpc.clients.findMany.queryFilter());
-				router.navigate({
+				router.push({
 					pathname: "/dashboard/clients/[id]",
 					params: { id: data.id },
 				});
@@ -35,7 +35,7 @@ export function useMutateClients() {
 	);
 
 	const update = useMutation(
-		trpc.clients.update.mutationOptions({
+		trpc.clients.updateClient.mutationOptions({
 			onMutate: () => {
 				toast.loading("Actualizando cliente", {
 					position: "top-center",
@@ -47,15 +47,8 @@ export function useMutateClients() {
 				toast.success("Cliente actualizado exitosamente", {
 					position: "top-center",
 				});
-				queryClient.invalidateQueries(
-					trpc.clients.findOneBy.queryFilter({
-						clientId: variables.clientId,
-					}),
-				);
-				router.navigate({
-					pathname: "/dashboard/clients/[id]",
-					params: { id: variables.clientId },
-				});
+				refreshClientPageData(variables.clientId);
+				router.back();
 			},
 			onError: () => {
 				toast.dismiss("update-client");

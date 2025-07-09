@@ -8,6 +8,7 @@ import {
 	Plus,
 	LogOut,
 	ChevronsUpDown,
+	Camera,
 } from "lucide-react-native";
 
 iconWithClassName(Trash2Icon);
@@ -17,6 +18,7 @@ iconWithClassName(X);
 iconWithClassName(ArrowLeft);
 iconWithClassName(Plus);
 iconWithClassName(LogOut);
+iconWithClassName(Camera);
 iconWithClassName(ChevronsUpDown);
 
 export {
@@ -28,4 +30,5 @@ export {
 	Plus,
 	LogOut,
 	ChevronsUpDown,
+	Camera,
 };

@@ -12,12 +12,14 @@ import { ScrollView } from "react-native-gesture-handler";
 import { ClientForm } from "../components/client-form";
 import { useMutateClients } from "@/modules/clients/application/hooks/use.mutate-clients";
 import type { ClientDetail } from "@/modules/clients/application/models/entities";
+import { useRouter } from "expo-router";
 
 interface Props {
 	client: ClientDetail;
 }
 
 export default function UpdateClientScreen({ client }: Props) {
+	const router = useRouter();
 	const { update } = useMutateClients();
 
 	return (

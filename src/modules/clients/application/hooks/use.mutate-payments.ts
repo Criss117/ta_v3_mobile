@@ -1,13 +1,14 @@
 import { toast } from "sonner-native";
 import { useTRPC } from "@/integrations/trpc";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { useRefreshClientData } from "./use.refresh-client-data";
 
 export function useMutatePayments() {
 	const trpc = useTRPC();
-	const queryClient = useQueryClient();
+	const { refreshClientPageData } = useRefreshClientData();
 
 	const create = useMutation(
-		trpc.payments.payDebt.mutationOptions({
+		trpc.clients.payDebt.mutationOptions({
 			onMutate: () => {
 				toast.loading("Creando pago...", {
 					id: "pay-debt-mutation",
@@ -18,19 +19,7 @@ export function useMutatePayments() {
 				toast.success("Pago creado exitosamente", {
 					id: "pay-debt-mutation",
 				});
-				queryClient.invalidateQueries(
-					trpc.clients.findOneBy.queryFilter({
-						clientId: variables.clientId,
-					}),
-				);
-				queryClient.invalidateQueries(
-					trpc.tickets.findManyByClient.queryFilter({
-						clientId: variables.clientId,
-					}),
-				);
-				queryClient.invalidateQueries(
-					trpc.payments.findManyByClient.queryFilter(),
-				);
+				refreshClientPageData(variables.clientId);
 			},
 			onError: () => {
 				toast.dismiss("pay-debt-mutation");
@@ -40,7 +29,7 @@ export function useMutatePayments() {
 	);
 
 	const deletePayments = useMutation(
-		trpc.payments.deletePayments.mutationOptions({
+		trpc.clients.deleteManyPayments.mutationOptions({
 			onMutate: ({ ids }) => {
 				toast.loading(`Eliminando ${ids.length} pagos`, {
 					id: "delete-payments",
@@ -49,19 +38,7 @@ export function useMutatePayments() {
 			onSuccess: (_, variables) => {
 				toast.dismiss("delete-payments");
 				toast.success("Pagos eliminados");
-				queryClient.invalidateQueries(
-					trpc.clients.findOneBy.queryOptions({
-						clientId: variables.clientId,
-					}),
-				);
-				queryClient.invalidateQueries(
-					trpc.tickets.findManyByClient.queryOptions({
-						clientId: variables.clientId,
-					}),
-				);
-				queryClient.invalidateQueries(
-					trpc.payments.findManyByClient.infiniteQueryFilter(),
-				);
+				refreshClientPageData(variables.clientId);
 			},
 			onError: (err) => {
 				toast.dismiss("delete-payments");

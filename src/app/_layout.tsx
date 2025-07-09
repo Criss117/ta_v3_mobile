@@ -11,15 +11,11 @@ import {
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { ActivityIndicator, Appearance, Platform, View } from "react-native";
+import { Appearance, Platform } from "react-native";
 import { useColorScheme } from "@/lib/useColorScheme";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
 import { Integrations } from "@/integrations";
 import { DEFAULT_THEME } from "@/lib/constants";
-import { authClient } from "@/integrations/auth";
-import { useAuth } from "@/modules/auth/application/store/auth.store";
-import { Text } from "@/components/ui/text";
 
 const LIGHT_THEME = {
 	...DefaultTheme,
@@ -44,23 +40,15 @@ const usePlatformSpecificSetup = Platform.select({
 export default function RootLayout() {
 	usePlatformSpecificSetup();
 	const { isDarkColorScheme } = useColorScheme();
-	const { data, isPending } = authClient.useSession();
-	const setUser = useAuth((s) => s.setUser);
 
-	useEffect(() => {
-		if (!isPending && data?.user) {
-			setUser(data.user);
-		}
-	}, [isPending, data?.user, setUser]);
-
-	if (isPending) {
-		return (
-			<View className="flex-1 justify-center items-center bg-muted">
-				<Text className="text-4xl font-bold text-primary">Nimbly</Text>
-				<ActivityIndicator size="large" color="white" />
-			</View>
-		);
-	}
+	// if (isPending) {
+	// 	return (
+	// 		<View className="flex-1 justify-center items-center bg-muted">
+	// 			<Text className="text-4xl font-bold text-primary">Nimbly</Text>
+	// 			<ActivityIndicator size="large" color="white" />
+	// 		</View>
+	// 	);
+	// }
 
 	return (
 		<Integrations>
@@ -73,23 +61,12 @@ export default function RootLayout() {
 								headerShown: false,
 							}}
 						>
-							<Stack.Protected guard={data?.user === undefined}>
-								<Stack.Screen
-									name="auth/sign-in"
-									options={{
-										title: "Iniciar Sesión",
-										headerRight: () => <ThemeToggle />,
-									}}
-								/>
-							</Stack.Protected>
-							<Stack.Protected guard={data?.user !== undefined}>
-								<Stack.Screen
-									name="dashboard"
-									options={{
-										headerShown: false,
-									}}
-								/>
-							</Stack.Protected>
+							<Stack.Screen
+								name="dashboard"
+								options={{
+									headerShown: false,
+								}}
+							/>
 						</Stack>
 						<PortalHost />
 						<Toaster />

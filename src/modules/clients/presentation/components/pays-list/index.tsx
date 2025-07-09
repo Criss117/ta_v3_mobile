@@ -1,3 +1,9 @@
+import { Suspense, useMemo, useState } from "react";
+import { View } from "react-native";
+import { HandCoins } from "lucide-react-native";
+import { FlatList, RefreshControl } from "react-native-gesture-handler";
+import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
+import { ErrorBoundary } from "react-error-boundary";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -11,18 +17,12 @@ import {
 } from "@/components/ui/dialog";
 import { Text } from "@/components/ui/text";
 import { useTRPC } from "@/integrations/trpc";
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
-import { HandCoins } from "lucide-react-native";
-import { Suspense, useMemo, useState } from "react";
-import { FlatList, RefreshControl } from "react-native-gesture-handler";
 import {
 	DeletePayments,
 	PaysListCard,
 	PaysListCheckProvider,
 	usePaysListCheck,
 } from "./card";
-import { ErrorBoundary } from "react-error-boundary";
-import { View } from "react-native";
 import { useMutatePayments } from "@/modules/clients/application/hooks/use.mutate-payments";
 
 interface Props {
@@ -32,16 +32,14 @@ interface Props {
 function PaysListSuspense({ clientId }: Props) {
 	const trpc = useTRPC();
 	const query = useSuspenseInfiniteQuery(
-		trpc.payments.findManyByClient.infiniteQueryOptions(
+		trpc.clients.findManyPayments.infiniteQueryOptions(
 			{
-				search: {
-					limit: 10,
-					clientId,
-				},
+				clientId,
 				cursor: {
-					lastId: null,
 					createdAt: null,
+					lastId: null,
 				},
+				limit: 10,
 			},
 			{
 				getNextPageParam: (lastPage) =>

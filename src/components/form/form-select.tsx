@@ -56,7 +56,6 @@ export function FormSelect<T extends FieldValues>({
 				const defaultValue = items?.find(
 					(item) => item.id.toString() === field.value?.toString(),
 				);
-				console.log({ defaultValue });
 				return (
 					<FormItem>
 						{label && (

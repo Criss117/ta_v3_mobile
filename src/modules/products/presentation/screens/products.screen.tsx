@@ -1,5 +1,7 @@
-import { Suspense, useState } from "react";
 import { View } from "react-native";
+import { Link } from "expo-router";
+import { Plus } from "lucide-react-native";
+import { Suspense, useState } from "react";
 import { FlatList, RefreshControl } from "react-native-gesture-handler";
 import { ErrorBoundary } from "react-error-boundary";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
@@ -10,9 +12,8 @@ import { ProductCard } from "../components/product-card";
 import { ProductCardSkeleton } from "../components/product-card/skeleton";
 import { SearchBar } from "@/components/form/search-bar";
 import { DrawerHeader } from "@/components/ui/drawer-header";
-import { Link } from "expo-router";
-import { Plus } from "lucide-react-native";
 import { Button } from "@/components/ui/button";
+import { DialogCamera } from "@/components/form/dialog-barcode-camera";
 
 interface Props {
 	searchQuery: string;
@@ -23,10 +24,8 @@ function ProductsScreenSuspense({ searchQuery }: Props) {
 	const query = useSuspenseInfiniteQuery(
 		trpc.products.findMany.infiniteQueryOptions(
 			{
-				search: {
-					limit: 20,
-					searchQuery,
-				},
+				limit: 20,
+				searchQuery,
 				cursor: {
 					lastId: null,
 					createdAt: null,
@@ -103,7 +102,13 @@ export function ProductsScreen() {
 					placeholder="Buscar productos"
 					query={query}
 					setQuery={setQuery}
-				/>
+				>
+					<DialogCamera
+						onBarcodeScanned={({ raw }) => {
+							setQuery(raw);
+						}}
+					/>
+				</SearchBar>
 			</View>
 			<View className="mx-5 flex-1">
 				<ErrorBoundary fallback={<Text>Algo ha ido mal</Text>}>

@@ -1,59 +1,60 @@
-import { Button, View } from "react-native";
+import React, { useMemo } from "react";
+import { View } from "react-native";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { Text } from "@/components/ui/text";
-import { useAuth } from "@/modules/auth/application/store/auth.store";
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Camera, CameraView } from "expo-camera";
 
-export default function Dashboard() {
-	const [message, setMessage] = useState<string>("");
-	const [version, setVersion] = useState<unknown>(null);
-	const user = useAuth((s) => s.user);
-	if (!user) {
-		return null;
-	}
-
-	const fetchVersion = async () => {
-		const version = await fetch(
-			"http://192.168.101.12:8788/printer/impresoras",
-		).then((r) => r.json());
-
-		setVersion(version);
-	};
-
-	const operations = {
-		serial: "",
-		nombreImpresora: "POS-80C",
-		operaciones: [
-			{
-				nombre: "Corte",
-				argumentos: [1],
-			},
-			{
-				nombre: "EscribirTexto",
-				argumentos: [`${message}\n`],
-			},
-			{
-				nombre: "Corte",
-				argumentos: [1],
-			},
-		],
-	};
-
-	const print = async () => {
-		await fetch("http://192.168.101.12:8788/printer/imprimir", {
-			method: "POST",
-			body: JSON.stringify(operations),
-		}).then((r) => console.log(r));
-	};
+export default function HomePage() {
+	const snapPoints = useMemo(() => ["25%", "75%"], []);
 
 	return (
-		<View>
-			<Input value={message} onChangeText={setMessage} />
-			<Text>{JSON.stringify(operations, null, 2)}</Text>
-			<Text>{JSON.stringify(version, null, 2)}</Text>
-			<Button onPress={fetchVersion} title="Fetch Version" />
-			<Button onPress={print} title="Imprimir" />
-			<Text>{JSON.stringify(process.env, null, 2)}</Text>
-		</View>
+		<GestureHandlerRootView className="flex-1">
+			<BottomSheet snapPoints={snapPoints}>
+				<BottomSheetView
+					style={{
+						flex: 1,
+						backgroundColor: "red",
+						height: "100%",
+					}}
+				>
+					<View className="flex-1 items-center justify-center h-full w-full">
+						<CameraView
+							style={{ flex: 1, width: "100%", height: "100%" }}
+							barcodeScannerSettings={{
+								barcodeTypes: [
+									"aztec",
+									"code39",
+									"code93",
+									"code128",
+									"datamatrix",
+									"ean13",
+									"ean8",
+									"itf14",
+									"pdf417",
+									"qr",
+									"upc_e",
+								],
+							}}
+							onBarcodeScanned={({ raw }) => {
+								console.log(raw);
+							}}
+						>
+							<View
+								style={{
+									flex: 1,
+									justifyContent: "center",
+									alignItems: "center",
+									width: "100%",
+									height: "100%",
+								}}
+							>
+								<Text>Enfoca el código de barras</Text>
+							</View>
+						</CameraView>
+					</View>
+				</BottomSheetView>
+			</BottomSheet>
+		</GestureHandlerRootView>
 	);
 }

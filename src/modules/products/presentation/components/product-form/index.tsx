@@ -12,6 +12,7 @@ import { Text } from "@/components/ui/text";
 import { cn } from "@/lib/utils";
 import { Form } from "@/components/ui/form";
 import { SelectCategory } from "./select-category";
+import { BarcodeInput } from "./barcode-input";
 
 interface Props {
 	onSubmit: (data: CreateProductDto) => void;
@@ -53,11 +54,9 @@ export function ProductForm({ onSubmit, isPending, product }: Props) {
 	return (
 		<Form {...form}>
 			<View className="gap-y-6 mx-1 mb-5">
-				<FormInput
+				<BarcodeInput
 					control={form.control}
-					label="Código de barras"
-					name="barcode"
-					required
+					setValue={(value) => form.setValue("barcode", value)}
 				/>
 				<FormInput
 					label="Descripción"

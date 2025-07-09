@@ -1,3 +1,14 @@
+import { Suspense, useMemo } from "react";
+import { ScrollView } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import type {
+	Control,
+	ControllerRenderProps,
+	FieldValues,
+	Path,
+} from "react-hook-form";
+
 import {
 	FormField,
 	FormItem,
@@ -12,19 +23,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Text } from "@/components/ui/text";
 import { useTRPC } from "@/integrations/trpc";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { Suspense, useMemo } from "react";
-import type {
-	Control,
-	ControllerRenderProps,
-	FieldValues,
-	Path,
-} from "react-hook-form";
-import type { TextInputProps } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface Props<T extends FieldValues> {
 	description?: string;
@@ -46,10 +45,8 @@ function SelectCategoryContent<T extends FieldValues>({
 				createdAt: null,
 				lastId: null,
 			},
-			search: {
-				limit: 20,
-				searchQuery: "",
-			},
+			limit: 50,
+			searchQuery: "",
 		}),
 	);
 
