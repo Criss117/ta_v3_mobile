@@ -1,5 +1,6 @@
 import "@/global.css";
 import { useEffect, useLayoutEffect } from "react";
+import { Stack } from "expo-router";
 import { Toaster } from "sonner-native";
 import { PortalHost } from "@rn-primitives/portal";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -9,13 +10,16 @@ import {
 	DefaultTheme,
 	ThemeProvider,
 } from "@react-navigation/native";
-import { Stack } from "expo-router";
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+import migrations from "../../drizzle/migrations";
 import { StatusBar } from "expo-status-bar";
 import { Appearance, Platform } from "react-native";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
 import { Integrations } from "@/integrations";
 import { DEFAULT_THEME } from "@/lib/constants";
+import { db } from "@/integrations/db";
+import { Text } from "@/components/ui/text";
 
 const LIGHT_THEME = {
 	...DefaultTheme,
@@ -40,6 +44,11 @@ const usePlatformSpecificSetup = Platform.select({
 export default function RootLayout() {
 	usePlatformSpecificSetup();
 	const { isDarkColorScheme } = useColorScheme();
+	const { error } = useMigrations(db, migrations);
+
+	if (error) {
+		return <Text>Error al migrar la base de datos</Text>;
+	}
 
 	// if (isPending) {
 	// 	return (
@@ -68,7 +77,7 @@ export default function RootLayout() {
 								}}
 							/>
 						</Stack>
-						<PortalHost />
+						{/* <PortalHost /> */}
 						<Toaster />
 					</SafeAreaProvider>
 				</GestureHandlerRootView>

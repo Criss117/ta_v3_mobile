@@ -10,7 +10,7 @@ import { X } from "@/components/icons/action-icons";
 interface Props {
 	placeholder: string;
 	query: string;
-	setQuery: React.Dispatch<React.SetStateAction<string>>;
+	setQuery: (query: string) => void;
 	debounceTime?: number;
 	children?: React.ReactNode;
 }

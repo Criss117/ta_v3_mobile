@@ -22,12 +22,12 @@ export function useMutateProducts() {
 	const update = useMutation(
 		trpc.products.update.mutationOptions({
 			onMutate: () => {
-				refreshProductsPageData();
 				toast.loading("Actualizando producto", {
 					id: "update_product",
 				});
 			},
 			onSuccess: () => {
+				refreshProductsPageData();
 				toast.dismiss("update_product");
 				toast.success("Producto actualizado");
 			},

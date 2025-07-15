@@ -1,6 +1,5 @@
-import { ProductForm } from "../components/product-form";
+import ProductForm from "../components/product-form";
 import { ScrollView } from "react-native-gesture-handler";
-import { useRouter } from "expo-router";
 import {
 	Card,
 	CardContent,
@@ -10,12 +9,8 @@ import {
 } from "@/components/ui/card";
 import { View } from "react-native";
 import { StackHeader } from "@/components/ui/stack-header";
-import { useMutateProducts } from "@/modules/products/application/hooks/use.mutate-products";
 
 export function CreateProductScreen() {
-	const router = useRouter();
-	const { create } = useMutateProducts();
-
 	return (
 		<View className="flex-1">
 			<StackHeader title="Formulario de creación" />
@@ -28,14 +23,25 @@ export function CreateProductScreen() {
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<ProductForm
-							isPending={create.isPending}
-							onSubmit={(data) =>
-								create.mutate(data, {
-									onSuccess: () => router.navigate("/dashboard/products"),
-								})
-							}
-						/>
+						<ProductForm.Root action="create">
+							<View className="gap-y-6 mx-1 mb-5">
+								<ProductForm.BarcodeInput />
+								<ProductForm.Description />
+								<View className="flex-row gap-x-2">
+									<ProductForm.CostPrice />
+									<ProductForm.SalePrice />
+								</View>
+								<ProductForm.WholesalePrice />
+								<View className="flex-row gap-x-2">
+									<ProductForm.Stock />
+									<ProductForm.MinStock />
+								</View>
+								<ProductForm.Category />
+							</View>
+							<View className="mt-2 flex-row gap-x-2">
+								<ProductForm.Submit />
+							</View>
+						</ProductForm.Root>
 					</CardContent>
 				</Card>
 			</ScrollView>

@@ -1,48 +1,29 @@
+import { Suspense } from "react";
 import { View } from "react-native";
 import { Link } from "expo-router";
 import { Plus } from "lucide-react-native";
-import { Suspense, useState } from "react";
 import { FlatList, RefreshControl } from "react-native-gesture-handler";
 import { ErrorBoundary } from "react-error-boundary";
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
-import { useTRPC } from "@/integrations/trpc";
 
 import { Text } from "@/components/ui/text";
-import { ProductCard } from "../components/product-card";
-import { ProductCardSkeleton } from "../components/product-card/skeleton";
+import { Button } from "@/components/ui/button";
 import { SearchBar } from "@/components/form/search-bar";
 import { DrawerHeader } from "@/components/ui/drawer-header";
-import { Button } from "@/components/ui/button";
 import { DialogCamera } from "@/components/form/dialog-barcode-camera";
+import { ProductCard } from "@/modules/products/presentation/components/product-card";
+import { useFindManyProducts } from "@/modules/products/application/hooks/use.query-products";
+import { ProductCardSkeleton } from "@/modules/products/presentation/components/product-card/skeleton";
+import { useProductsQueryFilters } from "@/modules/products/application/context/products-query-filters.context";
 
-interface Props {
-	searchQuery: string;
-}
-
-function ProductsScreenSuspense({ searchQuery }: Props) {
-	const trpc = useTRPC();
-	const query = useSuspenseInfiniteQuery(
-		trpc.products.findMany.infiniteQueryOptions(
-			{
-				limit: 20,
-				searchQuery,
-				cursor: {
-					lastId: null,
-					createdAt: null,
-				},
-			},
-			{
-				getNextPageParam: (lastPage) =>
-					lastPage.nextCursor.lastId ? lastPage.nextCursor : null,
-			},
-		),
-	);
+function ProductsScreenSuspense() {
+	const query = useFindManyProducts();
 
 	const products = query.data?.pages.flatMap((page) => page.items);
 
 	return (
-		<View className="flex-1 ">
+		<View className="flex-1">
 			<FlatList
+				className="mb-5 mt-2"
 				data={products}
 				ListEmptyComponent={<Text>No hay productos</Text>}
 				showsVerticalScrollIndicator={false}
@@ -54,7 +35,6 @@ function ProductsScreenSuspense({ searchQuery }: Props) {
 					if (query.isFetchingNextPage) return;
 					query.fetchNextPage();
 				}}
-				className="mb-5 mt-2"
 				refreshControl={
 					<RefreshControl
 						refreshing={query.isFetching}
@@ -70,7 +50,7 @@ export function ProductsScreenSkeleton() {
 	const data = Array.from({ length: 3 }).map((_, i) => ({ id: i }));
 
 	return (
-		<View className="flex-1 ">
+		<View className="flex-1">
 			<FlatList
 				data={data}
 				keyExtractor={(item) => item.id.toString()}
@@ -84,7 +64,7 @@ export function ProductsScreenSkeleton() {
 }
 
 export function ProductsScreen() {
-	const [query, setQuery] = useState<string>("");
+	const { query, setQuery } = useProductsQueryFilters();
 
 	return (
 		<View className="flex-1">
@@ -113,7 +93,7 @@ export function ProductsScreen() {
 			<View className="mx-5 flex-1">
 				<ErrorBoundary fallback={<Text>Algo ha ido mal</Text>}>
 					<Suspense fallback={<ProductsScreenSkeleton />}>
-						<ProductsScreenSuspense searchQuery={query} />
+						<ProductsScreenSuspense />
 					</Suspense>
 				</ErrorBoundary>
 			</View>

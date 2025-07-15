@@ -1,3 +1,5 @@
+import { View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import {
 	Card,
 	CardContent,
@@ -6,22 +8,14 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { StackHeader } from "@/components/ui/stack-header";
-import React from "react";
-import { View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
-import { ClientForm } from "../components/client-form";
-import { useMutateClients } from "@/modules/clients/application/hooks/use.mutate-clients";
+import ClientForm from "@/modules/clients/presentation/components/client-form";
 import type { ClientDetail } from "@/modules/clients/application/models/entities";
-import { useRouter } from "expo-router";
 
 interface Props {
 	client: ClientDetail;
 }
 
 export default function UpdateClientScreen({ client }: Props) {
-	const router = useRouter();
-	const { update } = useMutateClients();
-
 	return (
 		<View className="flex-1">
 			<StackHeader title="Formulario de creación" />
@@ -34,21 +28,21 @@ export default function UpdateClientScreen({ client }: Props) {
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<ClientForm
-							client={client}
-							isPending={update.isPending}
-							onSubmit={(data, { onSuccess }) => {
-								update.mutate(
-									{
-										clientId: client.id,
-										...data,
-									},
-									{
-										onSuccess,
-									},
-								);
-							}}
-						/>
+						<ClientForm.Root action="update" client={client}>
+							<View className="gap-y-6 mx-1 mb-5">
+								<ClientForm.BarCode />
+								<ClientForm.FullName />
+								<ClientForm.Email />
+								<ClientForm.Phone />
+								<ClientForm.Address />
+								<ClientForm.CreditLimit />
+								<ClientForm.Modality />
+								<ClientForm.NumberOfInstallments />
+							</View>
+							<View className="mt-2 flex-row gap-x-2">
+								<ClientForm.Submit />
+							</View>
+						</ClientForm.Root>
 					</CardContent>
 				</Card>
 			</ScrollView>

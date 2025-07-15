@@ -8,12 +8,9 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { StackHeader } from "@/components/ui/stack-header";
-import { ClientForm } from "@/modules/clients/presentation/components/client-form";
-import { useMutateClients } from "@/modules/clients/application/hooks/use.mutate-clients";
+import ClientForm from "@/modules/clients/presentation/components/client-form";
 
 export function CreateClientScreen() {
-	const { create } = useMutateClients();
-
 	return (
 		<View className="flex-1">
 			<StackHeader title="Formulario de creación" />
@@ -26,14 +23,21 @@ export function CreateClientScreen() {
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<ClientForm
-							isPending={create.isPending}
-							onSubmit={(data, { onSuccess }) => {
-								create.mutate(data, {
-									onSuccess,
-								});
-							}}
-						/>
+						<ClientForm.Root action="create">
+							<View className="gap-y-6 mx-1 mb-5">
+								<ClientForm.BarCode />
+								<ClientForm.FullName />
+								<ClientForm.Email />
+								<ClientForm.Phone />
+								<ClientForm.Address />
+								<ClientForm.CreditLimit />
+								<ClientForm.Modality />
+								<ClientForm.NumberOfInstallments />
+							</View>
+							<View className="mt-2 flex-row gap-x-2">
+								<ClientForm.Submit />
+							</View>
+						</ClientForm.Root>
 					</CardContent>
 				</Card>
 			</ScrollView>

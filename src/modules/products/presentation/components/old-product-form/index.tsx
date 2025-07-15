@@ -4,8 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	createProductDto,
 	type CreateProductDto,
-} from "@/modules/products/application/dtos/create-product.dto";
-import type { ProductSummary } from "@/modules/products/application/models/entities";
+} from "@/modules/products/infrastructure/dtos/create-product.dto";
 import { FormInput } from "@/components/form/form-input";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
@@ -13,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { Form } from "@/components/ui/form";
 import { SelectCategory } from "./select-category";
 import { BarcodeInput } from "./barcode-input";
+import type { ProductSummary } from "@/modules/products/infrastructure/entities/product.entity";
 
 interface Props {
 	onSubmit: (data: CreateProductDto) => void;
