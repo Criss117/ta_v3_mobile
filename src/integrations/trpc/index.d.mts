@@ -452,6 +452,25 @@ declare const appRouter: _trpc_server.TRPCBuiltRouter<{
             };
             meta: object;
         }>;
+        findManyLastUpdatedProducts: _trpc_server.TRPCQueryProcedure<{
+            input: Date;
+            output: {
+                isActive: boolean | null;
+                createdAt: Date;
+                updatedAt: Date;
+                deletedAt: Date | null;
+                id: number;
+                barcode: string | null;
+                description: string;
+                costPrice: number;
+                salePrice: number;
+                wholesalePrice: number;
+                stock: number;
+                minStock: number;
+                categoryId: number | null;
+            }[];
+            meta: object;
+        }>;
     }>>;
     categories: _trpc_server.TRPCBuiltRouter<{
         ctx: object;

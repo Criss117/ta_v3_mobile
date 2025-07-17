@@ -1,12 +1,7 @@
-import { Suspense, use, useEffect } from "react";
+import { Suspense } from "react";
 import { View } from "react-native";
 import { Text } from "@/components/ui/text";
-import syncProductsDB from "@/modules/products/application/db/sync-products";
 import { useNetInfo } from "@/integrations/netinfo";
-
-function findAllCategories() {
-	return syncProductsDB.findAllCategories();
-}
 
 function ShowAllProductsFromDb() {
 	const { netInfo } = useNetInfo();

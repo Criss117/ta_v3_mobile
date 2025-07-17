@@ -16,8 +16,6 @@ export class FindManyProductsUseCase {
 	public async execute(
 		meta: FindManyProductsDto,
 	): Promise<Paginated<ProductSummary, BaseCursorDto>> {
-		console.log({ meta });
-
 		const data = await this.productQueryRepository.findMany(meta);
 
 		const { hasMore, items, lastItem } = calculateNextCursor(data, meta.limit);

@@ -1,7 +1,3 @@
-import { PendingScreen } from "@/components/screens/pending-screen";
-import { useTRPC } from "@/integrations/trpc";
-import { useQueryClient } from "@tanstack/react-query";
-import syncProductDb from "@/modules/products/application/db/sync-products";
 import {
 	createContext,
 	use,
@@ -9,7 +5,12 @@ import {
 	useState,
 	useTransition,
 } from "react";
+import { useTRPC } from "@/integrations/trpc";
+import { useQueryClient } from "@tanstack/react-query";
+import syncProductDb from "@/modules/products/application/db/sync-products";
+import { PendingScreen } from "@/components/screens/pending-screen";
 import { useNetInfo } from "@/integrations/netinfo";
+import { findOneLastProductUpdatedUseCase } from "@/modules/products/container";
 
 interface Props {
 	children: React.ReactNode;
@@ -28,18 +29,36 @@ export function SyncProductsProvider({ children }: Props) {
 	const [isSync, setIsSync] = useState(false);
 	const { apiIsWorking, netInfo } = useNetInfo();
 
+	const checkLastProductUpdated = async () => {
+		const lastProductUpdated = await findOneLastProductUpdatedUseCase.execute();
+
+		if (!lastProductUpdated) {
+			return [];
+		}
+
+		return queryClient.fetchQuery(
+			trpc.products.findManyLastUpdatedProducts.queryOptions(
+				lastProductUpdated.updatedAt,
+			),
+		);
+	};
+
 	useLayoutEffect(() => {
 		startTransition(async () => {
 			const total = await syncProductDb.totalProducts();
 
 			if (total.totalCategories > 0 && total.totalProducts > 0) {
+				const productsToUpdate = await checkLastProductUpdated();
+
+				if (productsToUpdate.length > 0) {
+					await syncProductDb.updateProducts(productsToUpdate);
+				}
+
 				setIsSync(true);
-				console.log("no se ingresaron productos");
 				return;
 			}
 
 			if (!netInfo?.isConnected || !apiIsWorking) {
-				console.log("no hay conexion");
 				setIsSync(true);
 				return;
 			}
@@ -49,7 +68,6 @@ export function SyncProductsProvider({ children }: Props) {
 			);
 
 			await syncProductDb.populateProducts(data);
-			console.log("se ingresaron productos");
 			setIsSync(true);
 		});
 	}, []);

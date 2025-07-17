@@ -5,6 +5,7 @@ import type { AppRouter } from "@/integrations/trpc/index.mjs";
 import type { inferRouterOutputs } from "@trpc/server";
 
 type AllData = inferRouterOutputs<AppRouter>["products"]["findAll"];
+type InsertProduct = typeof products.$inferSelect;
 
 async function totalProducts() {
 	const [{ totalProducts }] = await db
@@ -49,9 +50,18 @@ async function findAllCategories() {
 	return db.select().from(categories).where(eq(categories.isActive, true));
 }
 
+async function updateProducts(data: InsertProduct[]) {
+	const updatePromises = data.map((product) => {
+		return db.update(products).set(product).where(eq(products.id, product.id));
+	});
+
+	await Promise.all(updatePromises);
+}
+
 export default {
 	totalProducts,
 	populateProducts,
 	findAllProducts,
 	findAllCategories,
+	updateProducts,
 };

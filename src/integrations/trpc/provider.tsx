@@ -17,7 +17,7 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
 						const rOptions = options as RequestInit;
 
 						return fetch(url, {
-							credentials: "include",
+							// credentials: "include",
 							...rOptions,
 						});
 					},

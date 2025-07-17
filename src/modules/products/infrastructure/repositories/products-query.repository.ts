@@ -111,4 +111,19 @@ export class ProductsQueryRepository {
 
 		return product;
 	}
+
+	public async findOneLastProductUpdated() {
+		const [product] = await this.db
+			.select()
+			.from(products)
+			.where(and(eq(products.isActive, true), isNotNull(products.barcode)))
+			.orderBy(desc(products.createdAt))
+			.limit(1);
+
+		if (!product) {
+			return null;
+		}
+
+		return product;
+	}
 }
