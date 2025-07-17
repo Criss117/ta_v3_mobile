@@ -61,7 +61,7 @@ function Root({ children, client, action }: RootProps) {
 		throw new Error("ClientForm.Root must have a client");
 	}
 
-	const netInfo = useNetInfo();
+	const { netInfo } = useNetInfo();
 	const { update, create } = useMutateClients();
 	const form = useForm<CreateClientDto>({
 		resolver: zodResolver(createClientDto),
@@ -86,7 +86,7 @@ function Root({ children, client, action }: RootProps) {
 	});
 
 	const onSubmit = form.handleSubmit(async (data) => {
-		if (!netInfo.isConnected) {
+		if (!netInfo?.isConnected) {
 			return;
 		}
 
@@ -118,7 +118,7 @@ function Root({ children, client, action }: RootProps) {
 		}
 	});
 
-	if (!netInfo.isConnected) {
+	if (!netInfo?.isConnected) {
 		return (
 			<Alert icon={TerminalIcon}>
 				<AlertTitle>Error</AlertTitle>

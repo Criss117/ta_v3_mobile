@@ -58,7 +58,7 @@ function Root({ children, product, action }: RootProps) {
 		throw new Error("ProductForm.Root must have a product");
 	}
 
-	const netInfo = useNetInfo();
+	const { netInfo } = useNetInfo();
 	const { create, update } = useMutateProducts();
 	const form = useForm<CreateProductDto>({
 		resolver: zodResolver(createProductDto),
@@ -77,7 +77,7 @@ function Root({ children, product, action }: RootProps) {
 	});
 
 	const onSubmit = form.handleSubmit(async (data) => {
-		if (!netInfo.isConnected) {
+		if (!netInfo?.isConnected) {
 			return;
 		}
 

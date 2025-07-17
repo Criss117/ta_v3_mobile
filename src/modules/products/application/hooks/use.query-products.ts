@@ -4,11 +4,13 @@ import { useNetInfo } from "@/integrations/netinfo";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { useProductsQueryFilters } from "@/modules/products/application/context/products-query-filters.context";
 import { findManyProductsUseCase } from "@/modules/products/container";
+import { useSyncProducts } from "../context/sync-products.context";
 
 export function useFindManyProducts() {
 	const trpc = useTRPC();
 	const { limit, query: searchQuery } = useProductsQueryFilters();
-	const netInfo = useNetInfo();
+	const { netInfo } = useNetInfo();
+	const { isSync } = useSyncProducts();
 
 	const queryOptions = useMemo(() => {
 		const options = trpc.products.findMany.infiniteQueryOptions(
@@ -26,7 +28,7 @@ export function useFindManyProducts() {
 			},
 		);
 
-		if (!netInfo.isConnected) {
+		if (!netInfo?.isConnected || isSync) {
 			options.queryFn = ({ pageParam }) =>
 				findManyProductsUseCase.execute({
 					limit,
@@ -39,7 +41,7 @@ export function useFindManyProducts() {
 		}
 
 		return options;
-	}, [netInfo.isConnected, limit, searchQuery]);
+	}, [netInfo?.isConnected, limit, searchQuery, isSync]);
 
 	const query = useSuspenseInfiniteQuery(queryOptions);
 

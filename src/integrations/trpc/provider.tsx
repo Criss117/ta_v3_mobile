@@ -12,7 +12,7 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
 			links: [
 				httpBatchLink({
 					transformer: superjson,
-					url: `${process.env.EXPO_PUBLIC_API_URL}/trpc`,
+					url: `${process.env.EXPO_PUBLIC_API_URL}/api/trpc`,
 					fetch(url, options) {
 						const rOptions = options as RequestInit;
 

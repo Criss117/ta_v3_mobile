@@ -1,11 +1,12 @@
 import { calculateNextCursor } from "@/lib/utils";
 import type { FindManyProductsDto } from "@/modules/products/infrastructure/dtos/find-many-products.dto";
 import type { ProductsQueryRepository } from "@/modules/products/infrastructure/repositories/products-query.repository";
-import type { Product } from "../entities/product.entity";
+
 import type {
 	BaseCursorDto,
 	Paginated,
 } from "@/modules/shared/dtos/cursor.dto";
+import type { ProductSummary } from "../../infrastructure/entities/product.entity";
 
 export class FindManyProductsUseCase {
 	constructor(
@@ -14,7 +15,9 @@ export class FindManyProductsUseCase {
 
 	public async execute(
 		meta: FindManyProductsDto,
-	): Promise<Paginated<Product, BaseCursorDto>> {
+	): Promise<Paginated<ProductSummary, BaseCursorDto>> {
+		console.log({ meta });
+
 		const data = await this.productQueryRepository.findMany(meta);
 
 		const { hasMore, items, lastItem } = calculateNextCursor(data, meta.limit);

@@ -1,8 +1,9 @@
 import "@/global.css";
-import { useEffect, useLayoutEffect } from "react";
+import { useLayoutEffect } from "react";
 import { Stack } from "expo-router";
 import { Toaster } from "sonner-native";
-import { PortalHost } from "@rn-primitives/portal";
+import { StatusBar } from "expo-status-bar";
+import { Appearance, Platform, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
@@ -11,9 +12,7 @@ import {
 	ThemeProvider,
 } from "@react-navigation/native";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import migrations from "../../drizzle/migrations";
-import { StatusBar } from "expo-status-bar";
-import { Appearance, Platform } from "react-native";
+import migrations from "@drizzle/migrations";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
 import { Integrations } from "@/integrations";
@@ -36,7 +35,6 @@ export {
 } from "expo-router";
 
 const usePlatformSpecificSetup = Platform.select({
-	web: useSetWebBackgroundClassName,
 	android: useSetAndroidNavigationBar,
 	default: () => {},
 });
@@ -49,15 +47,6 @@ export default function RootLayout() {
 	if (error) {
 		return <Text>Error al migrar la base de datos</Text>;
 	}
-
-	// if (isPending) {
-	// 	return (
-	// 		<View className="flex-1 justify-center items-center bg-muted">
-	// 			<Text className="text-4xl font-bold text-primary">Nimbly</Text>
-	// 			<ActivityIndicator size="large" color="white" />
-	// 		</View>
-	// 	);
-	// }
 
 	return (
 		<Integrations>
@@ -77,25 +66,12 @@ export default function RootLayout() {
 								}}
 							/>
 						</Stack>
-						{/* <PortalHost /> */}
 						<Toaster />
 					</SafeAreaProvider>
 				</GestureHandlerRootView>
 			</ThemeProvider>
 		</Integrations>
 	);
-}
-
-const useIsomorphicLayoutEffect =
-	Platform.OS === "web" && typeof window === "undefined"
-		? useEffect
-		: useLayoutEffect;
-
-function useSetWebBackgroundClassName() {
-	useIsomorphicLayoutEffect(() => {
-		// Adds the background color to the html element to prevent white background on overscroll.
-		document.documentElement.classList.add("bg-background");
-	}, []);
 }
 
 function useSetAndroidNavigationBar() {

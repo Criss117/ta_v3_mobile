@@ -63,7 +63,7 @@ export function ClientHeaderSection({ client }: Props) {
 								<PaysList clientId={client.id} />
 							</View>
 							<View className="flex-1">
-								<PayDebt clientId={client.id} />
+								<PayDebt clientId={client.id} hasDebt={client.totalDebt > 0} />
 							</View>
 						</View>
 						<SettleDebt clientId={client.id} hasDebt={client.totalDebt > 0} />
